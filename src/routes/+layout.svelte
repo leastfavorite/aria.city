@@ -4,6 +4,13 @@
 	let { children } = $props();
 </script>
 
+<style>
+:global(body) {
+	background-color: black;
+	color: white;
+}
+</style>
+
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>

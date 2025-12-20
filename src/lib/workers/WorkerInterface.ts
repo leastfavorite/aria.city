@@ -1,13 +1,11 @@
-'use client';
-
 export class WorkerInterface<P extends Procedures, C> {
   worker: Worker
   promises: Promises<P>
   eventQueue: [WorkerEvent<P, C>, Transferable[]][]
   running: boolean
 
-  constructor(url: URL, args: C, transferables: Transferable[] = []) {
-    this.worker = new Worker(url)
+  constructor(worker: Worker, args: C, transferables: Transferable[] = []) {
+    this.worker = worker
     this.promises = {}
     this.eventQueue = []
     this.running = false
