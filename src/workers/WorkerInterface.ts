@@ -1,4 +1,6 @@
-class WorkerInterface<C, P extends Procedures> {
+'use client';
+
+export class WorkerInterface<P extends Procedures, C> {
   worker: Worker
   promises: Promises<P>
   eventQueue: [WorkerEvent<P, C>, Transferable[]][]

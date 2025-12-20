@@ -1,63 +1,43 @@
-'use client';
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { PlanterProps } from "./Planter";
+'use client'
 
+import { createContext, PropsWithChildren, use, useContext, useEffect, useRef, useState } from 'react'
+import { GardenWorkerArgs, GardenWorkerProcedures, PlanterArgs } from './GardenWorker'
+import { WorkerInterface } from '@/workers/WorkerInterface';
 
-export interface GardenProviderProps {
-    canvasSize: number,
-    pixelScale: number
-}
+type GardenWorker = WorkerInterface<GardenWorkerProcedures, GardenWorkerArgs>
 
-const GardenContext = createContext<[Worker | null, () => GardenProviderProps]>(
-    [null, () => { throw new Error("useGarden() called without Garden Provider!") }]);
+const GardenContext = createContext<GardenWorker | null>(null);
 
 export function useGarden() {
-    const [worker, getProps] = useContext(GardenContext)
-    const { canvasSize, pixelScale } = getProps();
+  const garden = useContext(GardenContext)
+  if (garden === null) {
+    return
+    // throw new Error("useGarden() called with no external provider!")
+  }
 
-
-    const requestPlanter = (canvas: OffscreenCanvas, props: PlanterProps): boolean => {
-        if (!worker) return false;
-
-        worker.postMessage({
-            event: 'requestPlanter',
-            data: {
-                canvas: canvas,
-                ...props
-            }
-        }, [canvas])
-
-        return true;
-    }
-
-    return {
-        canvasSize: canvasSize * pixelScale,
-        requestPlanter
-    }
+  return {
+    addPlanter: async (p: PlanterArgs) => await garden.call('addPlanter', p, [p.canvas])
+  }
 }
 
+export default function GardenProvider({
+  children,
+  ...props
+}: PropsWithChildren<GardenWorkerArgs>) {
 
-export default function GardenProvider({ children, ...props }: PropsWithChildren<GardenProviderProps>) {
-    const [worker, setWorker] = useState<Worker | null>(null)
+  const worker = useRef<GardenWorker>(null)
+  useEffect(() => {
+    worker.current = new WorkerInterface<GardenWorkerProcedures, GardenWorkerArgs>(
+      new Worker(
+        new URL('./GardenWorker.worker.ts', import.meta.url),
+        {type: "module"}),
+      props)
+    return () => { worker.current && use(worker.current.close()) }
+  }, [])
 
-    useEffect(() => {
-        const webWorker = new Worker(new URL('./gardenWorker.ts', import.meta.url))
-        setWorker(webWorker)
-        webWorker.postMessage({
-            event: 'initialize',
-            data: props
-        })
-
-        return () => {
-            setWorker(null)
-            webWorker.postMessage({ event: 'destroy' })
-            webWorker.terminate()
-        }
-    }, [])
-
-    return (
-        <GardenContext.Provider value={[worker, () => props]}>
-            {children}
-        </GardenContext.Provider>
-    );
+  return (
+    <GardenContext.Provider value={worker.current}>
+      {children}
+    </GardenContext.Provider>
+  )
 }
