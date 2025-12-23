@@ -1,8 +1,8 @@
-import Garden from '@/garden/Garden'
+import GardenProvider from '@/components/GardenProvider'
 
 export default function Page() {
   return (
-    <Garden pixelScale={3}>
-    </Garden>
+    <GardenProvider>
+    </GardenProvider>
   )
 }
