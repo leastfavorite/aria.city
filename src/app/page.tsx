@@ -1,5 +1,8 @@
-import Planter from '@/garden/Planter'
+import Garden from '@/garden/Garden'
 
 export default function Page() {
-  return <Planter key={'test'} />
+  return (
+    <Garden pixelScale={3}>
+    </Garden>
+  )
 }

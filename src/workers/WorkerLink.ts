@@ -1,13 +1,11 @@
-'use client';
-
-export class WorkerInterface<P extends Procedures, C> {
+export default class WorkerLink<P extends Procedures, C> {
   worker: Worker
   promises: Promises<P>
   eventQueue: [WorkerEvent<P, C>, Transferable[]][]
   running: boolean
 
-  constructor(url: URL, args: C, transferables: Transferable[] = []) {
-    this.worker = new Worker(url)
+  constructor(worker: Worker, args: C, transferables: Transferable[] = []) {
+    this.worker = worker
     this.promises = {}
     this.eventQueue = []
     this.running = false
@@ -32,10 +30,11 @@ export class WorkerInterface<P extends Procedures, C> {
       }
     })
 
-    this.worker.postMessage(args, transferables)
+    this.worker.postMessage({type: 'init', args}, transferables)
   }
 
   private emitEvent(e: WorkerEvent<P, C>, transferables: Transferable[] = []) {
+    console.log('event emitting:', e, this.running)
     if (this.running) {
       this.worker.postMessage(e, transferables)
     } else {
