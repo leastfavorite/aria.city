@@ -1,16 +1,24 @@
 'use client';
 
-import { createContext, PropsWithChildren, Ref, useEffect, useMemo, useRef } from "react";
+import { createContext, PropsWithChildren, Ref, useContext, useEffect, useMemo, useRef } from "react";
 import { mergeRefs } from "react-merge-refs";
 import useMeasure from "react-use-measure";
-import Garden, { GardenProps } from "@/garden/Garden";
+import makeGarden, { Garden, GardenProps } from "@/garden/Garden";
 
 import style from './style.module.css';
 
-export const GardenContext = createContext<Garden>(null);
+const GardenContext = createContext<Garden | null>(null);
+
+export function useGarden(): Garden {
+    const garden = useContext(GardenContext)
+    if (!garden) {
+        throw new Error("Tried using garden outside of context!")
+    }
+    return garden
+}
 
 export default function GardenProvider({children, ...props}: PropsWithChildren<GardenProps>) {
-    const garden = useMemo(() => new Garden(props), [props]);
+    const garden = useMemo(() => makeGarden(props), [props]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [boundsRef, bounds] = useMeasure({ debounce: 1/60 });
@@ -20,13 +28,12 @@ export default function GardenProvider({children, ...props}: PropsWithChildren<G
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
-            garden.attachCanvas(canvas)
-            return () => garden.detachCanvas()
+            return garden.attachCanvas(canvas)
         }
     }, [canvasRef, garden])
 
     useEffect(() => {
-        garden.setSize(bounds)
+        garden.resize(bounds.width, bounds.height)
     }, [bounds, garden])
 
     return (

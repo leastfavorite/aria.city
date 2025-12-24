@@ -6,21 +6,37 @@ import fragmentShaderSrc from './fragment.glsl';
 export interface GardenProps {
 }
 
-export default class Garden {
-	canvas?: HTMLCanvasElement
-	gl?: WebGL2RenderingContext
-	frameId?: number
+export interface Garden {
+	attachCanvas: (c: HTMLCanvasElement) => (() => void) | undefined,
+	resize: (w: number, h: number) => void
+}
 
-	constructor({}: GardenProps) {
+export default function makeGarden({}: GardenProps): Garden {
 
+	let canvas: HTMLCanvasElement;
+	let gl: WebGL2RenderingContext;
+
+	let width = 0;
+	let height = 0
+
+	const update = (dt: number) => {
+		console.log(dt)
 	}
 
-	render() {
-		const gl = this.gl
-		if (!gl) return;
+	const resize = (w: number, h: number) => {
+		width = w;
+		height = h;
+	}
+
+	const attachCanvas = (_canvas: HTMLCanvasElement) => {
+		canvas = _canvas;
+
+		const _gl = canvas.getContext('webgl2')
+		if (!_gl) return;
+		gl = _gl
 
 		// initialize gl
-		const triangleVerticies = [
+		const triangleVertices = [
 		  // Top middle
 		  0.0, 0.5,
 		  // Bottom left
@@ -28,7 +44,8 @@ export default class Garden {
 		  // Bottom right
 		  0.5, -0.5,
 		];
-		const triangleGeoCpuBuffer = new Float32Array(triangleVerticies);
+
+		const triangleGeoCpuBuffer = new Float32Array(triangleVertices);
 
 		const triangleGeoBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeoBuffer);
@@ -45,9 +62,9 @@ export default class Garden {
 			gl.shaderSource(shader, src)
 			gl.compileShader(shader)
 			if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-			    const errorMessage = gl.getShaderInfoLog(shader);
-			    console.error(`Failed to compile vertex shader: ${errorMessage}`);
-			    return;
+				const errorMessage = gl.getShaderInfoLog(shader);
+				console.error(`Failed to compile vertex shader: ${errorMessage}`);
+				return;
 			}
 
 			return shader
@@ -61,9 +78,9 @@ export default class Garden {
 		gl.attachShader(program, fragmentShader!);
 		gl.linkProgram(program)
 		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-		    const errorMessage = gl.getProgramInfoLog(program);
-		    console.error(`Failed to link GPU program: ${errorMessage}`);
-		    return;
+			const errorMessage = gl.getProgramInfoLog(program);
+			console.error(`Failed to link GPU program: ${errorMessage}`);
+			return;
 		}
 
 		const vertexPositionAttributeLocation = gl.getAttribLocation(
@@ -73,49 +90,47 @@ export default class Garden {
 			return;
 		}
 
-		gl.clearColor(0.08, 0.08, 0.08, 0.0);
-		gl.clear(gl.COLOR_BUFFER_BIT);
-		gl.useProgram(program);
+		const renderFrame = () => {
+			canvas.width = width;
+			canvas.height = height;
 
-		gl.enableVertexAttribArray(vertexPositionAttributeLocation);
-		gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeoBuffer);
-		gl.vertexAttribPointer(
-			vertexPositionAttributeLocation,
-			2,
-			gl.FLOAT,
-			false,
-			2 * Float32Array.BYTES_PER_ELEMENT,
-			0
-		)
-		gl.drawArrays(gl.TRIANGLES, 0, 3);
-	}
+			gl.viewport(0, 0, width, height)
+			gl.clearColor(0.08, 0.08, 0.08, 0.0);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			gl.useProgram(program);
 
-	attachCanvas(canvas: HTMLCanvasElement) {
-		this.canvas = canvas
-		console.log("attached!")
-		this.gl = canvas.getContext('webgl2')!;
-		this.frameId = requestAnimationFrame(this.frameloop.bind(this))
-	}
+			gl.enableVertexAttribArray(vertexPositionAttributeLocation);
+			gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeoBuffer);
+			gl.vertexAttribPointer(
+				vertexPositionAttributeLocation,
+				2,
+				gl.FLOAT,
+				false,
+				2 * Float32Array.BYTES_PER_ELEMENT,
+				0
+			)
+			gl.drawArrays(gl.TRIANGLES, 0, 3);
+		}
 
-	frameloop() {
-		this.frameId = requestAnimationFrame(this.frameloop.bind(this))
-	}
+		let animationFrame: number;
+		let lastTimestamp: number = 0;
 
-	detachCanvas() {
-		if (this.frameId) {
-			cancelAnimationFrame(this.frameId)
+		const frameLoop = (currentTimestamp: number) => {
+			const dt = lastTimestamp == 0 ? 0 : currentTimestamp - lastTimestamp
+			lastTimestamp = currentTimestamp;
+			update(dt)
+			renderFrame()
+			animationFrame = requestAnimationFrame(frameLoop)
+		}
+		animationFrame = requestAnimationFrame(frameLoop)
+
+		return () => {
+			cancelAnimationFrame(animationFrame)
 		}
 	}
 
-	setSize(bounds: RectReadOnly) {
-		if (this.canvas) {
-			this.canvas.width = bounds.width;
-			this.canvas.height = bounds.height;
-			if (this.gl) {
-				this.gl.viewport(0, 0, bounds.width, bounds.height);
-				this.render()
-			}
-		}
-
+	return {
+		attachCanvas,
+		resize
 	}
 }
