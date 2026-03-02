@@ -3,7 +3,7 @@
 import styles from './style.module.css';
 import fontData from './static/pixelify-sans.json';
 
-import { CameraControls, Center, OrthographicCamera, PerspectiveCamera, View } from "@react-three/drei";
+import { CameraControls, Center, Float, OrthographicCamera, PerspectiveCamera, View } from "@react-three/drei";
 import { useMemo } from 'react';
 import { MeshPhongMaterial } from 'three';
 import { FontLoader, TextGeometry } from 'three/examples/jsm/Addons.js';
@@ -31,7 +31,8 @@ function TextDisplay({ children }: { children: string }) {
         let xOffset = 0;
         const textSettings = {
             font,
-            size: 100
+            size: 100,
+            depth: 25
         };
 
         const scale = textSettings.size / fontData.resolution;
@@ -43,11 +44,24 @@ function TextDisplay({ children }: { children: string }) {
             }
 
             const geometry = new TextGeometry(char, textSettings);
-            const mesh = <mesh
-                geometry={geometry}
-                material={material}
-                position={[(xOffset + glyph.x_min) * scale, 0, 0]}
-            />
+            geometry.computeBoundingBox()
+
+            const oldPos = geometry.boundingBox!.min.clone();
+            geometry.center()
+
+            const mesh = (
+                <group
+                    position={[(xOffset + glyph.x_min) * scale, 0, 0]}
+                >
+                    <Float speed={5} rotationIntensity={1}>
+                        <mesh
+                            geometry={geometry}
+                            material={material}
+                            position={oldPos.sub(geometry.boundingBox!.min)}
+                        />
+                    </Float>
+                </group>
+            );
 
             xOffset += glyph.x_max;
             meshes.push(mesh)
@@ -69,17 +83,15 @@ export default function FancyText({ children }: { children: string }) {
             <View className={styles.view}>
                 <PerspectiveCamera
                     makeDefault
-                    position={[0, 0, 50]}
+                    position={[0, 0, 51]}
                     fov={30}
-                />
+                >
+                    <pointLight intensity={2000} />
+                </PerspectiveCamera>
                 <CameraControls />
                 <TextDisplay>
                     {children}
                 </TextDisplay>
-
-                <pointLight position={[10, 10, 10]} intensity={1000}>
-                </pointLight>
-
             </View>
         </span>
     );
