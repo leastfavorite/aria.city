@@ -9,14 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "gl-matrix": "^3.4.4",
-    "motion": "^12.23.25",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@types/three": "^0.183.1",
     "next": "16.0.10",
     "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "react-merge-refs": "^3.0.2",
-    "react-use-measure": "^2.1.7",
-    "regl": "^2.1.1",
+    "three": "^0.183.2",
     "use-tweaks": "^0.3.1"
   },
   "devDependencies": {
