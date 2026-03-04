@@ -1,5 +1,7 @@
-varying vec3 vWorldPosition;
+varying vec3 vPosition;
+
+uniform float uTextureScale;
 
 void main() {
-    vWorldPosition = position.xyz;
+    vPosition = position.xyz / uTextureScale;
 }

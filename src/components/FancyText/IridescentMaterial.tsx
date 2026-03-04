@@ -1,6 +1,6 @@
 'use client';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { MeshStandardMaterial } from 'three';
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CSM from 'three-custom-shader-material/vanilla'
@@ -12,8 +12,15 @@ interface IridescentMaterialProps {
     airIor: number,
     filmIor: number,
     bulkIor: number,
-    thickness: [number, number],
-    uvScale: number
+    thickness: number,
+    bumpDepth: number,
+    bumpSmoothness: number,
+
+    uvScale: number,
+    wavelengths: [number, number, number],
+
+    roughness: number,
+    metalness: number
 }
 
 export default function IridescentMaterial(props: IridescentMaterialProps) {
@@ -22,6 +29,14 @@ export default function IridescentMaterial(props: IridescentMaterialProps) {
     useFrame((state) => {
         if (materialRef.current) {
             materialRef.current!.uniforms.uTime.value = state.clock.elapsedTime
+
+            let u = materialRef.current.uniforms;
+            u.uIors.value = [props.airIor, props.filmIor, props.bulkIor];
+            u.uThickness.value = props.thickness;
+            u.uBumpDepth.value = props.bumpDepth;
+            u.uTextureScale.value = props.uvScale;
+            u.uWavelengths.value = props.wavelengths;
+            u.uBumpSmoothness.value = props.bumpSmoothness;
         }
     })
 
@@ -34,13 +49,18 @@ export default function IridescentMaterial(props: IridescentMaterialProps) {
             // Your Uniforms
             uniforms={{
                 uTime: { value: 0 },
-                uIors: { value: [props.airIor, props.filmIor, props.bulkIor] },
-                uThickness: { value: props.thickness },
-                uTextureScale: { value: props.uvScale }
+                uIors: { value: [1.0, 1.5, 1.0] },
+                uThickness: { value: 3280 },
+                uBumpDepth: { value: 21 },
+                uTextureScale: { value: 15 },
+                uWavelengths: { value: [430, 520, 650] },
+                uBumpSmoothness: { value: 0.1 }
             }}
             // Base material properties
             flatShading
-            color={0xff00ff}
+
+            roughness={props.roughness}
+            metalness={props.metalness}
         />
     )
 }

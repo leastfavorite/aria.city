@@ -1,13 +1,33 @@
-varying vec3 vWorldPosition;
+varying vec3 vPosition;
+
+// wavelengths for r, g, b light
+uniform vec3 uWavelengths;
 
 // IORs: [air, film, internal]
 uniform vec3 uIors;
 
 // film thickness: minThickness, maxThickness
-uniform vec2 uThickness;
+uniform float uThickness;
+uniform float uBumpDepth;
+uniform float uBumpSmoothness;
 
-// texturing:
-uniform float uTextureScale;
+/*** hash ***/
+// https://www.shadertoy.com/view/WttXWX
+uint murmurHash13(uvec3 src) {
+    const uint M = 0x5bd1e995u;
+    uint h = 1190494759u;
+    src *= M; src ^= src>>24u; src *= M;
+    h *= M; h ^= src.x; h *= M; h ^= src.y; h *= M; h ^= src.z;
+    h ^= h>>13u; h *= M; h ^= h>>15u;
+    return h;
+}
+
+// 1 output, 3 inputs
+float hash13(vec3 src) {
+    uint h = murmurHash13(floatBitsToUint(src));
+    return uintBitsToFloat(h & 0x007fffffu | 0x3f800000u) - 1.0;
+}
+
 
 /*** thin-film ***/
 
@@ -34,7 +54,7 @@ float tp(float n1, float n2, float cosI, float cosR) {
     return 2.0 * n1 * cosI / (n1 * cosR + n2 * cosI);
 }
 
-float thinFilmReflectance(float cos0, float lambda, float thickness) {
+vec3 thinFilmReflectance(float cos0, vec3 lambdas, float thickness) {
 
     float d01 = (uIors.x >= uIors.y) ? 0.0 : PI;
     float d12 = (uIors.y >= uIors.z) ? 0.0 : PI;
@@ -42,12 +62,12 @@ float thinFilmReflectance(float cos0, float lambda, float thickness) {
     float delta = d01 + d12;
     float sin1 = pow(uIors.x / uIors.y, 2.0) * (1.0 - pow(cos0, 2.0));
     if(sin1 > 1.0){
-        return 1.0;
+        return vec3(1.0);
     }
     float cos1 = sqrt(1.0 - sin1);
     float sin2 = pow(uIors.y / uIors.z, 2.0) * (1.0 - pow(cos1, 2.0));
     if (sin2 > 1.0){
-        return 1.0;
+        return vec3(1.0);
     }
     float cos2 = sqrt(1.0 - sin2);
 
@@ -56,13 +76,13 @@ float thinFilmReflectance(float cos0, float lambda, float thickness) {
     float beta_s = ts(uIors.x, uIors.y, cos0, cos1) * ts(uIors.y, uIors.z, cos1, cos2);
     float beta_p = tp(uIors.x, uIors.y, cos0, cos1) * tp(uIors.y, uIors.z, cos1, cos2);
 
-    float phi = (2.0 * PI / lambda) * (2.0 * uIors.y * thickness * cos1) + delta;
+    vec3 phi = (2.0 * PI / lambdas) * (2.0 * uIors.y * thickness * cos1) + delta;
 
-    float ts = pow(beta_s, 2.0) / (pow(alpha_s, 2.0) - 2.0 * alpha_s * cos(phi) + 1.0);
-    float tp = pow(beta_p, 2.0) / (pow(alpha_p, 2.0) - 2.0 * alpha_p * cos(phi) + 1.0);
+    vec3 ts = pow(beta_s, 2.0) / (pow(alpha_s, 2.0) - 2.0 * alpha_s * cos(phi) + 1.0);
+    vec3 tp = pow(beta_p, 2.0) / (pow(alpha_p, 2.0) - 2.0 * alpha_p * cos(phi) + 1.0);
     float beamRatio = (uIors.z * cos2) / (1.0 * cos0);
-    float t = beamRatio * (ts + tp) / 2.0;
-    return min(1.0, max(0.0, 1.0 - t));
+    vec3 t = beamRatio * (ts + tp) / 2.0;
+    return min(vec3(1.0), max(vec3(0.0), 1.0 - t));
 
 }
 
@@ -86,33 +106,58 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-void main() {
-    // compute face normal in view space
-    vec3 dx = dFdx(vViewPosition);
-    vec3 dy = dFdy(vViewPosition);
-    vec3 faceNormal = normalize(cross(dx, dy));
+float getRawThickness(vec3 pos) {
+    return hash13(floor(pos));
+}
 
+float getThickness(vec3 p) {
+    vec3 pos = vPosition + uBumpSmoothness / 2.0;
+    vec3 k = clamp(fract(pos) / uBumpSmoothness, 0.0, 1.0);
 
-    float thicknessFactor = 0.5 + 0.5 * sin(floor(vWorldPosition.x / uTextureScale));
-    float thickness = uThickness.x;
+    k = (3.0 - 2.0 * k) * k * k;
 
-    // compute camera ray direction in view space
-    vec3 rayDirection = normalize(vViewPosition);
+    float t = getRawThickness(pos);
 
-    float cosI = dot(rayDirection, faceNormal);
+    if (k == vec3(1.0)) {
+        return t;
+    }
 
-    vec3 reflectance = vec3(
-        thinFilmReflectance(cosI, 650.0, thickness),
-        thinFilmReflectance(cosI, 500.0, thickness),
-        thinFilmReflectance(cosI, 400.0, thickness)
+    vec3 dt = vec3(
+        getRawThickness(pos - vec3(1.0, 0.0, 0.0)),
+        getRawThickness(pos - vec3(0.0, 1.0, 0.0)),
+        getRawThickness(pos - vec3(0.0, 0.0, 1.0))
     );
 
+
+    return clamp(dot(1.0 - k, (dt - t)) + t, 0.0, 1.0);
+}
+
+
+vec3 getViewNormal() {
+    vec3 pos = vPosition - uBumpSmoothness/2.0;
+    // compute face normal
+    vec3 vdx = dFdx(vViewPosition);
+    vec3 vdy = dFdy(vViewPosition);
+    vec3 viewNormal = normalize(cross(vdx, vdy));
+
+    return normalize(viewNormal);
+}
+
+void main() {
+    vec3 viewNormal = getViewNormal();
+    float thicknessScalar = getThickness(vPosition);
+    float thickness = thicknessScalar * uBumpDepth + uThickness;
+
+    // compute camera ray direction in view space
+    float cosIncidence = dot(normalize(vViewPosition), viewNormal);
+
+    vec3 reflectance = thinFilmReflectance(cosIncidence, uWavelengths, thickness);
+
     vec3 hsv = rgb2hsv(reflectance);
-    vec3 color = hsv2rgb(vec3(hsv.x, pow(hsv.y, 1.0/3.0), 1.0));
+    vec3 color = hsv2rgb(vec3(hsv.x, hsv.y * 0.5 + 0.5, 1.0));
 
 
-
-    // csm_DiffuseColor = vec4(color, 1.0);
-    csm_FragColor = vec4(thicknessFactor, thicknessFactor, thicknessFactor, 1.0);
+    csm_DiffuseColor = vec4(color, 0.0);
+    // csm_FragColor = vec4(vec3(thicknessScalar), 1.0);
     // csm_FragColor = vec4(0.5 + 0.5 * normalize(vWorldPosition), 1.0);
 }

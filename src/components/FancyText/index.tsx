@@ -79,19 +79,58 @@ function TextDisplay({ text, children }: PropsWithChildren<{text: string}>) {
 export default function FancyText({ children }: { children: string }) {
 
     const iriProps = useControls({
-        airIor: 1,
-        filmIor: 2,
-        bulkIor: 3,
+        airIor: {
+            min: 1.0,
+            max: 3.0,
+            value: 1.0
+        },
+        filmIor: {
+            min: 1.0,
+            max: 3.0,
+            value: 1.5
+        },
+        bulkIor: {
+            min: 1.0,
+            max: 3.0,
+            value: 1.0
+        },
         thickness: {
-            min: 1,
+            min: 1000,
             max: 5000,
-            value: [20, 50]
+            value: 3280
+        },
+        bumpDepth: {
+            min: 0,
+            max: 100,
+            value: 21
         },
         uvScale: {
             min: 1,
             max: 50,
-            value: 10
+            value: 15
+        },
+        wavelengths: {
+            min: 200,
+            max: 1000,
+            value: [430, 520, 650]
+        },
+        bumpSmoothness: {
+            min: 0,
+            max: 1,
+            value: 0.1
+        },
+        roughness: {
+            min: 0,
+            max: 1,
+            value: 0
+        },
+        metalness: {
+            min: 0,
+            max: 1,
+            value: 0
         }
+
+
     })
 
     return (
