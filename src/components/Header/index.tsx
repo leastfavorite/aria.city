@@ -9,7 +9,7 @@ import { vec3 } from 'gl-matrix';
 function Title() {
     return (
         <h1 className={styles.title}>
-            <FancyText>aria.city</FancyText>
+            <FancyText>aria.city!</FancyText>
         </h1>
     );
 }

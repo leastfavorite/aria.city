@@ -51,8 +51,8 @@ export default function IridescentMaterial(props: IridescentMaterialProps) {
                 uTime: { value: 0 },
                 uIors: { value: [1.0, 1.5, 1.0] },
                 uThickness: { value: 3280 },
-                uBumpDepth: { value: 21 },
-                uTextureScale: { value: 15 },
+                uBumpDepth: { value: 25 },
+                uTextureScale: { value: 5 },
                 uWavelengths: { value: [430, 520, 650] },
                 uBumpSmoothness: { value: 0.1 }
             }}

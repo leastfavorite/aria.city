@@ -10,6 +10,7 @@
     font-size: 5em;
     margin: 0;
     padding-top: 0.25em;
+    text-align: center;
 }
 
 .navRoot {
@@ -23,7 +24,6 @@
     font-size: 1em;
 
     z-index: 10;
-
 }
 
 .navRoot li div {
@@ -79,7 +79,7 @@
 }
 
 .navRoot li:not(:hover) div {
-    --opacity: 25%;
+    --opacity: 0%;
     rotate: 0 0 0 0deg !important;
     background-position-x: 0% !important;
     background-position-y: 0% !important;
@@ -93,12 +93,12 @@
     text-decoration: none;
     color: rgb(var(--color4));
     font-weight: 400;
-    letter-spacing: 3;
+    letter-spacing: 1;
     transition: color 0.2s, font-weight 0.2s, letter-spacing 0.5s;
 }
 
 .navRoot li:hover a {
     color: rgb(var(--background));
-    font-weight: 500;
-    letter-spacing: 4;
+    font-weight: 800;
+    letter-spacing: 3;
 }

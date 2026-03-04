@@ -10,8 +10,9 @@ body {
   justify-content: stretch;
 
   background-color: rgb(var(--background));
+  color: rgb(var(--color4));
 
-  --background: 19, 17, 22;
+  --background: 17, 8, 19;
   --color1: 237, 112, 245;
   --color2: 155, 87, 244;
   --color3: 156, 196, 244;
