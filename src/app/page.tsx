@@ -12,8 +12,6 @@ export default function Page() {
   return (<>
     <Header />
     <main ref={container}>
-      <p>I'm aria!</p>
-
       <Canvas
         style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0, overflow: 'hidden' }}
         eventSource={container}
