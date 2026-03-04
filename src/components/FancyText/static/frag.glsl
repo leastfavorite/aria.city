@@ -1,8 +1,18 @@
 varying vec3 vWorldPosition;
 
-uniform float uFilmThickness;
-uniform float uFilmIor;
-uniform float uMetalIor;
+// IORs: [air, film, internal]
+uniform vec3 uIors;
+
+// film thickness: minThickness, maxThickness
+uniform vec2 uThickness;
+
+// texturing:
+uniform float uTextureScale;
+
+/*** thin-film ***/
+
+// thx alro from shadertoy
+// https://www.shadertoy.com/view/7sV3Rh
 
 // Reflection coefficient (s-polarized)
 float rs(float n1, float n2, float cosI, float cosR) {
@@ -26,29 +36,37 @@ float tp(float n1, float n2, float cosI, float cosR) {
 
 float thinFilmReflectance(float cos0, float lambda, float thickness) {
 
-    float d12 = (uFilmIor >= uMetalIor) ? 0.0 : PI;
-    float delta = PI + d12;
-    float sin1 = pow(1.0 / uFilmIor, 2.0) * (1.0 - pow(cos0, 2.0));
+    float d01 = (uIors.x >= uIors.y) ? 0.0 : PI;
+    float d12 = (uIors.y >= uIors.z) ? 0.0 : PI;
+
+    float delta = d01 + d12;
+    float sin1 = pow(uIors.x / uIors.y, 2.0) * (1.0 - pow(cos0, 2.0));
     if(sin1 > 1.0){
         return 1.0;
     }
     float cos1 = sqrt(1.0 - sin1);
-    float sin2 = pow(1.0 / uFilmIor, 2.0) * (1.0 - pow(cos1, 2.0));
+    float sin2 = pow(uIors.y / uIors.z, 2.0) * (1.0 - pow(cos1, 2.0));
     if (sin2 > 1.0){
         return 1.0;
     }
     float cos2 = sqrt(1.0 - sin2);
-    float alpha_s = rs(uFilmIor, 1.0, cos1, cos0) * rs(uFilmIor, uMetalIor, cos1, cos2);
-    float alpha_p = rp(uFilmIor, 1.0, cos1, cos0) * rp(uFilmIor, uMetalIor, cos1, cos2);
-    float beta_s = ts(1.0, uFilmIor, cos0, cos1) * ts(uFilmIor, uMetalIor, cos1, cos2);
-    float beta_p = tp(1.0, uFilmIor, cos0, cos1) * tp(uFilmIor, uMetalIor, cos1, cos2);
-    float phi = (2.0 * PI / lambda) * (2.0 * uFilmIor * thickness * cos1) + delta;
+
+    float alpha_s = rs(uIors.y, uIors.x, cos1, cos0) * rs(uIors.y, uIors.z, cos1, cos2);
+    float alpha_p = rp(uIors.y, uIors.x, cos1, cos0) * rp(uIors.y, uIors.z, cos1, cos2);
+    float beta_s = ts(uIors.x, uIors.y, cos0, cos1) * ts(uIors.y, uIors.z, cos1, cos2);
+    float beta_p = tp(uIors.x, uIors.y, cos0, cos1) * tp(uIors.y, uIors.z, cos1, cos2);
+
+    float phi = (2.0 * PI / lambda) * (2.0 * uIors.y * thickness * cos1) + delta;
+
     float ts = pow(beta_s, 2.0) / (pow(alpha_s, 2.0) - 2.0 * alpha_s * cos(phi) + 1.0);
     float tp = pow(beta_p, 2.0) / (pow(alpha_p, 2.0) - 2.0 * alpha_p * cos(phi) + 1.0);
-    float beamRatio = (uMetalIor * cos2) / (1.0 * cos0);
+    float beamRatio = (uIors.z * cos2) / (1.0 * cos0);
     float t = beamRatio * (ts + tp) / 2.0;
     return min(1.0, max(0.0, 1.0 - t));
+
 }
+
+/*** end thin-film ***/
 
 vec3 rgb2hsv(vec3 c)
 {
@@ -75,8 +93,8 @@ void main() {
     vec3 faceNormal = normalize(cross(dx, dy));
 
 
-    float thicknessFactor = 0.5 + 0.5 * sin(floor(vWorldPosition.x / 10.0));
-    float thickness = uFilmThickness;
+    float thicknessFactor = 0.5 + 0.5 * sin(floor(vWorldPosition.x / uTextureScale));
+    float thickness = uThickness.x;
 
     // compute camera ray direction in view space
     vec3 rayDirection = normalize(vViewPosition);

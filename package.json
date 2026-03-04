@@ -13,8 +13,9 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@types/three": "^0.183.1",
+    "leva": "^0.10.1",
     "next": "16.0.10",
-    "react": "19.2.0",
+    "react": "^19.2.0",
     "three": "^0.183.2",
     "three-custom-shader-material": "^6.4.0",
     "use-tweaks": "^0.3.1"

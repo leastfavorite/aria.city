@@ -4,13 +4,11 @@ import styles from './style.module.css';
 import fontData from './static/pixelify-sans.json';
 
 import { CameraControls, Center, Float, PerspectiveCamera, View } from "@react-three/drei";
-import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-import { useMemo } from 'react';
-import { MeshStandardMaterial } from 'three';
+import { PropsWithChildren, useMemo } from 'react';
 import { FontLoader, TextGeometry } from 'three/examples/jsm/Addons.js';
 
-import fragmentShader from './static/frag.glsl';
-import vertexShader from './static/vert.glsl';
+import { useControls } from 'leva';
+import IridescentMaterial from './IridescentMaterial';
 
 // load font information
 type Glyph = {
@@ -22,35 +20,10 @@ type Glyph = {
 const font = new FontLoader().parse(fontData as any)
 const glyphs = fontData.glyphs as { [char: string]: Glyph }
 
-const baseMaterial = new MeshStandardMaterial({
-  metalness: 1,
-  roughness: 1,
-});
-
-// create materials
-const sideMaterial = new CustomShaderMaterial({
-    baseMaterial,
-    uniforms: {
-         uFilmThickness: { value: 2000 },
-         uFilmIor: { value: 1.3 },
-         uMetalIor: { value: 2 }
-    },
-    vertexShader,
-    fragmentShader
-});
-
-const frontMaterial = new MeshStandardMaterial({
-  metalness: 1,
-  roughness: 0.35,
-  emissive: "#00d0f0",
-  emissiveIntensity: 0.05,
-  color: "#00d0f0"
-});
-
 // TODO: mouse reactivity
 // TODO: shaders
 
-function TextDisplay({ children }: { children: string }) {
+function TextDisplay({ text, children }: PropsWithChildren<{text: string}>) {
     const meshes = useMemo(() => {
         let meshes = [];
 
@@ -63,7 +36,7 @@ function TextDisplay({ children }: { children: string }) {
 
         const scale = textSettings.size / fontData.resolution;
 
-        for (const char of children) {
+        for (const char of text) {
             const glyph: Glyph | undefined = glyphs[char]
             if (!glyph) {
                 throw new Error(`Unknown glyph '${char}'`);
@@ -82,9 +55,10 @@ function TextDisplay({ children }: { children: string }) {
                     <Float speed={5 + Math.random()} rotationIntensity={1.5}>
                         <mesh
                             geometry={geometry}
-                            material={[sideMaterial, frontMaterial]}
                             position={oldPos.sub(geometry.boundingBox!.min)}
-                        />
+                        >
+                            {children}
+                        </mesh>
                     </Float>
                 </group>
             );
@@ -103,6 +77,23 @@ function TextDisplay({ children }: { children: string }) {
 }
 
 export default function FancyText({ children }: { children: string }) {
+
+    const iriProps = useControls({
+        airIor: 1,
+        filmIor: 2,
+        bulkIor: 3,
+        thickness: {
+            min: 1,
+            max: 5000,
+            value: [20, 50]
+        },
+        uvScale: {
+            min: 1,
+            max: 50,
+            value: 10
+        }
+    })
+
     return (
         <span className={styles.container}>
             <span className={styles.fallback}>
@@ -122,8 +113,8 @@ export default function FancyText({ children }: { children: string }) {
                     intensity={5000}
                 />
                 <CameraControls />
-                <TextDisplay>
-                    {children}
+                <TextDisplay text={children}>
+                    <IridescentMaterial {...iriProps} />
                 </TextDisplay>
             </View>
         </span>
