@@ -151,7 +151,6 @@ export default function FancyText({ children }: { children: string }) {
                     position={[0, 50, 10]}
                     intensity={5000}
                 />
-                <CameraControls />
                 <TextDisplay text={children}>
                     <IridescentMaterial {...iriProps} />
                 </TextDisplay>

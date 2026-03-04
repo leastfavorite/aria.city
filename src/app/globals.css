@@ -9,5 +9,12 @@ body {
   align-items: stretch;
   justify-content: stretch;
 
-  background-color: #131116;
+  background-color: rgb(var(--background));
+
+  --background: 19, 17, 22;
+  --color1: 237, 112, 245;
+  --color2: 155, 87, 244;
+  --color3: 156, 196, 244;
+  --color4: 236, 243, 247;
+  --color5: 249, 248, 200;
 }

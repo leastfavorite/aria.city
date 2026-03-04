@@ -3,10 +3,102 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 .title {
-    font-size: 3.5em;
+    font-size: 5em;
     margin: 0;
-    padding: 0.25em;
+    padding-top: 0.25em;
+}
+
+.navRoot {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+}
+
+.navRoot li {
+    text-transform: lowercase;
+    font-size: 1em;
+
+    z-index: 10;
+
+}
+
+.navRoot li div {
+    --opacity: 75%;
+    position: relative;
+    display: block;
+
+    padding: 0.3em 0.8em;
+    margin: 0.2em 0.6em;
+    text-transform: lowercase;
+    text-align: center;
+
+
+    perspective: 1px;
+
+    transition: rotate 0.2s, background-position 0.2s;
+
+    background: radial-gradient(circle at center,
+        rgba(var(--color5), var(--opacity)) 0%,
+        rgba(var(--color4), var(--opacity)) 27%,
+        rgba(var(--color3), var(--opacity)) 49%,
+        rgba(var(--color2), var(--opacity)) 73%,
+        rgba(var(--color1), var(--opacity)) 100%
+    );
+    background-color: rgba(var(--color2), 25%);
+
+    border-radius: 1.5em;
+    background-size: 300%;
+
+}
+
+.navRoot li div:before {
+    content: '';
+    position: absolute;
+    top: -0.3em;
+    bottom: -0.3em;
+    left: -0.3em;
+    right: -0.3em;
+    border: 1.5px solid rgba(var(--color4), 90%);
+    border-radius: 1.25em;
+
+    transition-property: top bottom left right border opacity;
+    transition-duration: 0.2s;
+}
+
+.navRoot li:hover div:before {
+    top: -0.225em;
+    bottom: -0.225em;
+    left: -0.225em;
+    right: -0.225em;
+    border-width: 0.2em;
+    opacity: 0.6;
+}
+
+.navRoot li:not(:hover) div {
+    --opacity: 25%;
+    rotate: 0 0 0 0deg !important;
+    background-position-x: 0% !important;
+    background-position-y: 0% !important;
+}
+
+.navRoot li:hover {
+    border-radius: 0.5em;
+}
+
+.navRoot a {
+    text-decoration: none;
+    color: rgb(var(--color4));
+    font-weight: 400;
+    letter-spacing: 3;
+    transition: color 0.2s, font-weight 0.2s, letter-spacing 0.5s;
+}
+
+.navRoot li:hover a {
+    color: rgb(var(--background));
+    font-weight: 500;
+    letter-spacing: 4;
 }
