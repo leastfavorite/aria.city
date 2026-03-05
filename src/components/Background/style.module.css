@@ -11,8 +11,8 @@
 
 .content {
     min-width: 60em;
-    border-left: 3px solid rgba(var(--fg), 66%);
-    border-right: 3px solid rgba(var(--fg), 66%);
+    border-left: 2px solid rgba(var(--fg), 66%);
+    border-right: 2px solid rgba(var(--fg), 66%);
     box-shadow: 0px 0px 200px 75px rgba(var(--bg), 50%);
     z-index: 1;
 }

@@ -15,39 +15,45 @@ function Title() {
 }
 
 function NavButton({ href, text }: { href: string, text: string }) {
-    const ref = useRef<HTMLDivElement>(null);
+    const liRef = useRef<HTMLLIElement>(null);
+    const divRef = useRef<HTMLDivElement>(null);
+    const aRef = useRef<HTMLAnchorElement>(null);
 
     function onMouseMove(event: MouseEvent) {
-        if (ref.current) {
-            const bounds = ref.current.getBoundingClientRect();
-
-            const size = Math.sqrt(
-                bounds.width * bounds.width +
-                bounds.height * bounds.height
-            ) / 2;
-
-
-            const parallel = [
-                bounds.x + bounds.width / 2 - event.clientX,
-                bounds.y + bounds.height / 2 - event.clientY,
-                0
-            ]
-
-            const rotAmt = vec3.len(parallel) / size;
-            const out: vec3 = [ 0, 0, 1 ];
-            const axis = vec3.normalize(out, vec3.cross(out, parallel, out));
-
-            ref.current.style.backgroundPositionX = `calc(30% + ${parallel[0] * 3}px)`
-            ref.current.style.backgroundPositionY = `calc(30% + ${parallel[1] * 3}px)`
-            ref.current.style.rotate =
-                `${axis[0]} ${axis[1]} ${axis[2]} ${rotAmt * 30}deg`
+        if (!divRef.current || !aRef.current || !liRef.current) {
+            return;
         }
+        const bounds = liRef.current.getBoundingClientRect();
+
+        const size = Math.sqrt(
+            bounds.width * bounds.width +
+            bounds.height * bounds.height
+        ) / 2;
+
+
+        const parallel = [
+            bounds.x + bounds.width / 2 - event.clientX,
+            bounds.y + bounds.height / 2 - event.clientY,
+            0
+        ]
+
+        const rotAmt = vec3.len(parallel) / size;
+        const out: vec3 = [ 0, 0, 1 ];
+        const axis = vec3.normalize(out, vec3.cross(out, parallel, out));
+
+        divRef.current.style.backgroundPositionX = `calc(30% + ${parallel[0] * 3}px)`
+        divRef.current.style.backgroundPositionY = `calc(30% + ${parallel[1] * 3}px)`
+        divRef.current.style.rotate =
+            `${axis[0]} ${axis[1]} ${axis[2]} ${rotAmt * 30}deg`
+
+        aRef.current.style.translate =
+            `${-parallel[0]/5}px ${-parallel[1]/5}px`
     }
 
     return (
-        <NavigationMenu.Item onMouseMove={onMouseMove}>
-            <div ref={ref}>
-                <Link href={href}>{text}</Link>
+        <NavigationMenu.Item ref={liRef} onMouseMove={onMouseMove}>
+            <div ref={divRef}>
+                <Link ref={aRef} href={href}>{text}</Link>
             </div>
         </NavigationMenu.Item>
     );

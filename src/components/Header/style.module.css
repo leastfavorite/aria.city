@@ -25,10 +25,11 @@
 
     z-index: 10;
     perspective: 150px;
-    margin: 0.2em 0.6em;
+    margin: 0.3em 0.6em;
 }
 
 .navRoot li div {
+    perspective: 150px;
     --opacity: 75%;
     position: relative;
     display: block;
@@ -37,10 +38,10 @@
     text-transform: lowercase;
     text-align: center;
 
-    transition: rotate 0.2s, background-position 0.2s;
-    translate: 0px 0px -40px;
+    transition-property: rotate background-position;
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 
-    border-radius: 1.5em;
     background-size: 300%;
 
 }
@@ -52,8 +53,7 @@
     bottom: -0.3em;
     left: -0.3em;
     right: -0.3em;
-    border: 1.5px solid rgba(var(--fg), 90%);
-    border-radius: 1.25em;
+    border: 2px solid rgba(var(--fg), 80%);
 
     transition-property: top bottom left right border opacity;
     transition-duration: 0.2s;
@@ -73,6 +73,7 @@
         var(--iridescent)
     ) 50% / 500% 500%;
     background-color: rgba(var(--fg), 25%);
+    padding: 0.2em 0.8em;
 }
 
 .navRoot li:not(:hover) div {
@@ -86,17 +87,22 @@
     border-radius: 0.5em;
 }
 
-.navRoot a {
+.navRoot li a {
+    display: inline-block;
     text-decoration: none;
-    color: rgb(var(--fg));
+    color: rgba(var(--fg), 80%);
     font-weight: 400;
     letter-spacing: 1;
-    transition: color 0.2s, font-weight 0.2s, letter-spacing 0.5s, font-size 0.5s;
+    transition: color 0.2s, font-weight 0.2s, letter-spacing 0.5s, font-size 0.5s, translate 0.3s;
 }
 
 .navRoot li:hover a {
     color: rgb(var(--bg));
     font-weight: 800;
     letter-spacing: 3;
-    font-size: 1.2em;
+    font-size: 1.4em;
+}
+
+.navRoot li:not(:hover) a {
+    translate: 0px 0px !important;
 }
