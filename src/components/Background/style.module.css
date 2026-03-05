@@ -1,3 +1,15 @@
+@media (min-width: 905px) {
+    .gutter {
+        display: block !important;
+    }
+
+    .content {
+        min-width: 840px;
+        border-left: 2px solid rgba(var(--fg), 66%);
+        border-right: 2px solid rgba(var(--fg), 66%);
+    }
+}
+
 .container {
     display: flex;
     flex-direction: row;
@@ -10,13 +22,12 @@
 }
 
 .content {
-    min-width: 60em;
-    border-left: 2px solid rgba(var(--fg), 66%);
-    border-right: 2px solid rgba(var(--fg), 66%);
+    flex: 1;
     box-shadow: 0px 0px 200px 75px rgba(var(--bg), 50%);
     z-index: 1;
 }
 .gutter {
+    display: none;
     position: relative;
     flex: 1;
 
@@ -27,7 +38,9 @@
     ) 50% / 100% 500%;
 
     animation: 180s linear infinite running gutter;
+    perspective: 200px;
 }
+
 @keyframes gutter {
     from {
         background-position-y: 0;
@@ -39,18 +52,26 @@
 
 .gutter:after {
     content: "";
+
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+
     background: repeating-conic-gradient(
         rgb(var(--bg)) 0% 25%,
-        rgba(var(--color5), 0%) 0% 50%
+        rgba(var(--fg), 0%) 0% 50%
     )
-    50% / 30px 30px;
+    50% / 10px 10px;
+    mix-blend-mode: overlay;
 
     animation: 12s linear infinite running checkerboard;
+    transform: scale(500%) rotateY(50deg);
+}
+
+.gutter:last-child:after {
+    transform: scaleX(-100%) scale(500%) rotateY(50deg);
 }
 
 @keyframes checkerboard {
@@ -58,7 +79,7 @@
         background-position: 0px 0px;
     }
     to {
-        background-position: 90px 60px;
+        background-position: 30px -10px;
 
     }
 

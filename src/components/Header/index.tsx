@@ -1,4 +1,4 @@
-import { MouseEvent, PropsWithChildren, useEffect, useRef } from 'react';
+import { MouseEvent, useRef } from 'react';
 import styles from './style.module.css';
 import FancyText from '../FancyText';
 

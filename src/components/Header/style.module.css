@@ -17,29 +17,32 @@
     display: flex;
     flex-direction: row;
     list-style-type: none;
+    gap: 1em;
 }
 
 .navRoot li {
     text-transform: lowercase;
-    font-size: 1em;
+    font-size: 1.2em;
 
     z-index: 10;
-    perspective: 150px;
-    margin: 0.3em 0.6em;
+    perspective: 100px;
+
+
+
 }
 
 .navRoot li div {
     perspective: 150px;
     --opacity: 75%;
     position: relative;
-    display: block;
+    display: inline-block;
 
-    padding: 0.3em 0.8em;
+    /* padding: 0.15em 0.4em;*/
     text-transform: lowercase;
     text-align: center;
 
     transition-property: rotate background-position;
-    transition-duration: 2s;
+    transition-duration: 1s;
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 
     background-size: 300%;
@@ -53,19 +56,20 @@
     bottom: -0.3em;
     left: -0.3em;
     right: -0.3em;
-    border: 2px solid rgba(var(--fg), 80%);
+    border: 0px solid rgba(var(--fg), 80%);
 
     transition-property: top bottom left right border opacity;
     transition-duration: 0.2s;
 }
 
 .navRoot li:hover div:before {
-    top: -0.225em;
-    bottom: -0.225em;
-    left: -0.225em;
-    right: -0.225em;
-    border-width: 0.2em;
-    opacity: 0.6;
+    --s: -0.23em;
+    top: var(--s);
+    bottom: var(--s);
+    left: var(--s);
+    right: var(--s);
+    border-width: 2px;
+    opacity: 1;
 }
 
 .navRoot li:hover div {
@@ -83,6 +87,24 @@
     background-position-y: 0% !important;
 }
 
+.navRoot div:after {
+    pointer-events: none;
+    content: "";
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background: repeating-conic-gradient(
+        rgba(var(--bg), 35%) 0% 25%,
+        rgba(var(--fg), 0%) 0% 50%
+    )
+    50% / 15px 15px;
+    mix-blend-mode: overlay;
+}
+
 .navRoot li:hover {
     border-radius: 0.5em;
 }
@@ -91,7 +113,8 @@
     display: inline-block;
     text-decoration: none;
     color: rgba(var(--fg), 80%);
-    font-weight: 400;
+    font-weight: 500;
+    font-size: 1.1em;
     letter-spacing: 1;
     transition: color 0.2s, font-weight 0.2s, letter-spacing 0.5s, font-size 0.5s, translate 0.3s;
 }

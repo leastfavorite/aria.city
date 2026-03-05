@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
-import { Pixelify_Sans, DM_Sans } from 'next/font/google';
+import { Pixelify_Sans, Smooch_Sans } from 'next/font/google';
 
 const pixelify = Pixelify_Sans({
   weight: "500",
   subsets: ['latin']
 })
 
-const dm_sans = DM_Sans({
+
+const smooch_sans = Smooch_Sans({
   weight: 'variable'
 })
 
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dm_sans.className}`}>
+      <body className={`${smooch_sans.className} ${pixelify.className}`}>
         {children}
       </body>
     </html>
