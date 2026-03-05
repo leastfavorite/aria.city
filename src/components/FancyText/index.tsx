@@ -3,7 +3,7 @@
 import styles from './style.module.css';
 import fontData from './static/pixelify-sans.json';
 
-import { CameraControls, Center, Float, PerspectiveCamera, View } from "@react-three/drei";
+import { Center, Float, PerspectiveCamera, View } from "@react-three/drei";
 import { PropsWithChildren, useMemo } from 'react';
 import { FontLoader, TextGeometry } from 'three/examples/jsm/Addons.js';
 
@@ -107,7 +107,7 @@ export default function FancyText({ children }: { children: string }) {
         uvScale: {
             min: 1,
             max: 50,
-            value: 15
+            value: 7
         },
         wavelengths: {
             min: 200,
@@ -127,7 +127,7 @@ export default function FancyText({ children }: { children: string }) {
         metalness: {
             min: 0,
             max: 1,
-            value: 0
+            value: 0.8
         }
 
 

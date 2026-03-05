@@ -9,13 +9,28 @@ body {
   align-items: stretch;
   justify-content: stretch;
 
-  background-color: rgb(var(--background));
-  color: rgb(var(--color4));
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
 
-  --background: 17, 8, 19;
-  --color1: 237, 112, 245;
-  --color2: 155, 87, 244;
-  --color3: 156, 196, 244;
-  --color4: 236, 243, 247;
-  --color5: 249, 248, 200;
+
+  --bg: 17, 8, 19;
+  --fg: 236, 243, 247;
+
+  --color1: 212, 212, 170;
+  --color2: 115, 160, 209;
+  --color3: 64, 75, 222;
+  --color4: 143, 27, 202;
+  --color5: 206, 93, 192;
+  --color6: 206, 135, 105;
+  --color7: 211, 197, 87;
+
+  --iridescent:
+    rgb(var(--color1)) 0%,
+    rgb(var(--color2)) 15%,
+    rgb(var(--color3)) 26%,
+    rgb(var(--color4)) 45%,
+    rgb(var(--color5)) 66%,
+    rgb(var(--color6)) 79%,
+    rgb(var(--color7)) 98%,
+    rgb(var(--color1)) 100%;
 }

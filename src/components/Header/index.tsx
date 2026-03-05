@@ -37,8 +37,8 @@ function NavButton({ href, text }: { href: string, text: string }) {
             const out: vec3 = [ 0, 0, 1 ];
             const axis = vec3.normalize(out, vec3.cross(out, parallel, out));
 
-            ref.current.style.backgroundPositionX = `calc(150% + ${parallel[0] * 1.5}px)`
-            ref.current.style.backgroundPositionY = `calc(150% + ${parallel[1] * 5}px)`
+            ref.current.style.backgroundPositionX = `calc(30% + ${parallel[0] * 3}px)`
+            ref.current.style.backgroundPositionY = `calc(30% + ${parallel[1] * 3}px)`
             ref.current.style.rotate =
                 `${axis[0]} ${axis[1]} ${axis[2]} ${rotAmt * 30}deg`
         }

@@ -1,0 +1,66 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: stretch;
+    align-items: space-between;
+
+    width: 100%;
+    min-height: 100%;
+}
+
+.content {
+    min-width: 60em;
+    border-left: 3px solid rgba(var(--fg), 66%);
+    border-right: 3px solid rgba(var(--fg), 66%);
+    box-shadow: 0px 0px 200px 75px rgba(var(--bg), 50%);
+    z-index: 1;
+}
+.gutter {
+    position: relative;
+    flex: 1;
+
+    background-color: white;
+
+    background: repeating-linear-gradient(0deg,
+        var(--iridescent)
+    ) 50% / 100% 500%;
+
+    animation: 180s linear infinite running gutter;
+}
+@keyframes gutter {
+    from {
+        background-position-y: 0;
+    }
+    to {
+        background-position-y: calc(500%);
+    }
+}
+
+.gutter:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: repeating-conic-gradient(
+        rgb(var(--bg)) 0% 25%,
+        rgba(var(--color5), 0%) 0% 50%
+    )
+    50% / 30px 30px;
+
+    animation: 12s linear infinite running checkerboard;
+}
+
+@keyframes checkerboard {
+    from {
+        background-position: 0px 0px;
+    }
+    to {
+        background-position: 90px 60px;
+
+    }
+
+}
+
