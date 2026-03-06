@@ -1,0 +1,134 @@
+.card {
+    --border: 5px;
+    flex: 1;
+    margin: var(--extent);
+    display: inline-block;
+    position: relative;
+
+    transition-property: rotate;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+
+    transform: scale(1);
+    .viewport:hover & {
+        rotate: var(--rot);
+    }
+    transform-style: preserve-3d;
+}
+
+.viewport {
+    display: inline-block;
+    --extent: 20px;
+    position: relative;
+    top: calc(-1 * var(--extent));
+    bottom: calc(-1 * var(--extent));
+    left: calc(-1 * var(--extent));
+    right: calc(-1 * var(--extent));
+
+    perspective: 400px;
+    transform-style: preserve-3d;
+}
+
+.background {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    background-color: #a30;
+
+    overflow: hidden;
+    border-radius: var(--border);
+
+    & div {
+        position: absolute;
+        bottom: var(--extent);
+        left: var(--extent);
+        top: var(--extent);
+        right: var(--extent);
+
+        transition-duration: 0.8s;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    & .iridescent {
+        --iridescence-opacity: 0.3;
+        --iridescence-opacity-hover: 0.8;
+        --offset-scale: -2;
+        --extent: calc(-75% * abs(var(--offset-scale)) - 20px);
+
+        transition-property: translate opacity;
+
+        mix-blend-mode: screen;
+        opacity: var(--iridescence-opacity);
+        background: radial-gradient(circle at 70% 40%,
+            rgb(var(--color1)) 0%,
+            rgb(var(--color2)) 50px,
+            rgb(var(--color3)) 20%,
+            rgb(var(--color4)) 38%,
+            rgb(var(--color5)) 60%,
+            rgb(var(--color6)) 79%,
+            rgb(var(--color7)) 98%,
+            rgb(var(--color1)) 100%
+        );
+
+        .viewport:hover & {
+            opacity: var(--iridescence-opacity-hover);
+            translate:
+                calc(var(--offset-scale) * var(--offset-x))
+                calc(var(--offset-scale) * var(--offset-y));
+        }
+    }
+
+    & .checkerboard {
+        --extent: -10%;
+        --offset-scale: -0.1;
+        content: "";
+        mix-blend-mode: overlay;
+        background: repeating-conic-gradient(
+            rgba(var(--bg), 50%) 0% 25%,
+            rgba(var(--fg), 0%) 0% 50%
+        ) 50% / 15px 15px;
+        transition-property: scale translate;
+
+        .viewport:hover & {
+            scale: 0.9;
+            translate:
+                calc(var(--offset-scale) * var(--offset-x))
+                calc(var(--offset-scale) * var(--offset-y));
+        }
+    }
+
+    & .shadow {
+        --extent: 0;
+        box-shadow: inset 0px 0px 50px -10px rgb(var(--bg));
+        opacity: 0.3;
+        transition-property: opacity;
+        mix-blend-mode: color-burn;
+    }
+
+}
+
+.border {
+    --extent: 5px;
+    position: absolute;
+    bottom: calc(-1 * var(--extent));
+    left: calc(-1 * var(--extent));
+    top: calc(-1 * var(--extent));
+    right: calc(-1 * var(--extent));
+
+    border: 0px solid rgb(var(--fg));
+    border-radius: calc(var(--extent) + var(--border));
+
+    transition-duration: 0.1s;
+    transition-timing-function: ease-out;
+    transition-property: border;
+    .viewport:hover & {
+        border: 2px solid rgb(var(--fg));
+    }
+}
+
+.childContainer {
+    transform-style: preserve-3d;
+}
