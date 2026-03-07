@@ -1,19 +1,24 @@
 .card {
-    --border: 5px;
+    --border: 2px;
     flex: 1;
     margin: var(--extent);
     display: inline-block;
     position: relative;
 
-    transition-property: rotate;
+    transition-property: rotate scale;
     transition-duration: 0.3s;
     transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
 
-    transform: scale(1);
+    transform-style: preserve-3d;
+
     .viewport:hover & {
+        scale: calc((1 - var(--mag)) * .2 + 1.1);
         rotate: var(--rot);
     }
-    transform-style: preserve-3d;
+
+    .viewport:active & {
+        scale: calc((1 - var(--mag)) * .1 + 1.1);
+    }
 }
 
 .viewport {
@@ -41,49 +46,34 @@
     overflow: hidden;
     border-radius: var(--border);
 
-    & div {
-        position: absolute;
-        bottom: var(--extent);
-        left: var(--extent);
-        top: var(--extent);
-        right: var(--extent);
-
-        transition-duration: 0.8s;
-        transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
-    }
-
     & .iridescent {
+        --parallax: -5;
+        --extent: -500%;
+
         --iridescence-opacity: 0.3;
         --iridescence-opacity-hover: 0.8;
-        --offset-scale: -2;
-        --extent: calc(-75% * abs(var(--offset-scale)) - 20px);
-
-        transition-property: translate opacity;
 
         mix-blend-mode: screen;
         opacity: var(--iridescence-opacity);
-        background: radial-gradient(circle at 70% 40%,
+        background: radial-gradient(circle at 55% 50%,
             rgb(var(--color1)) 0%,
-            rgb(var(--color2)) 50px,
-            rgb(var(--color3)) 20%,
-            rgb(var(--color4)) 38%,
-            rgb(var(--color5)) 60%,
-            rgb(var(--color6)) 79%,
-            rgb(var(--color7)) 98%,
-            rgb(var(--color1)) 100%
+            rgb(var(--color2)) 5%,
+            rgb(var(--color3)) 10%,
+            rgb(var(--color4)) 15%,
+            rgb(var(--color5)) 20%,
+            rgb(var(--color6)) 25%,
+            rgb(var(--color7)) 30%,
+            rgb(var(--color1)) 35%
         );
 
         .viewport:hover & {
             opacity: var(--iridescence-opacity-hover);
-            translate:
-                calc(var(--offset-scale) * var(--offset-x))
-                calc(var(--offset-scale) * var(--offset-y));
         }
     }
 
     & .checkerboard {
-        --extent: -10%;
-        --offset-scale: -0.1;
+        --extent: -25%;
+        --parallax: -0.25;
         content: "";
         mix-blend-mode: overlay;
         background: repeating-conic-gradient(
@@ -94,9 +84,6 @@
 
         .viewport:hover & {
             scale: 0.9;
-            translate:
-                calc(var(--offset-scale) * var(--offset-x))
-                calc(var(--offset-scale) * var(--offset-y));
         }
     }
 
@@ -118,17 +105,41 @@
     top: calc(-1 * var(--extent));
     right: calc(-1 * var(--extent));
 
-    border: 0px solid rgb(var(--fg));
+    border: 0px solid rgba(var(--fg), 50%);
     border-radius: calc(var(--extent) + var(--border));
 
     transition-duration: 0.1s;
     transition-timing-function: ease-out;
     transition-property: border;
+
     .viewport:hover & {
-        border: 2px solid rgb(var(--fg));
+        border: 2px solid rgba(var(--fg), 66%);
+    }
+    .viewport:active & {
+        transform: scale(0.985);
     }
 }
 
 .childContainer {
     transform-style: preserve-3d;
+}
+
+.card :global(.parallax) {
+    transition-duration: 0.8s;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+    transition-property: translate;
+
+    .viewport:hover & {
+        translate:
+            calc(var(--parallax) * var(--offset-x))
+            calc(var(--parallax) * var(--offset-y));
+    }
+}
+
+.card :global(.absolute) {
+    position: absolute;
+    top: var(--extent, 0);
+    bottom: var(--extent, 0);
+    left: var(--extent, 0);
+    right: var(--extent, 0);
 }

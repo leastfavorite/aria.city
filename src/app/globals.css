@@ -34,3 +34,12 @@ body {
     rgb(var(--color7)) 98%,
     rgb(var(--color1)) 100%;
 }
+
+.absolute {
+  --e: var(--extent, 0);
+  position: absolute;
+  top: var(--e);
+  bottom: var(--e);
+  left: var(--e);
+  right: var(--e);
+}

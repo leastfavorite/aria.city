@@ -1,6 +1,6 @@
 'use client';
 
-import { MouseEvent, PropsWithChildren, useCallback, useRef } from "react";
+import { CSSProperties, MouseEvent, PropsWithChildren, useCallback, useRef } from "react";
 import styles from './style.module.css';
 
 export interface CardProps {
@@ -54,28 +54,30 @@ export default function Card({ children, ...props }: PropsWithChildren<CardProps
             cardRef.current.style.setProperty(
                 "--rot", `${-mouse.y} ${mouse.x} 0 ${rotAmt}deg`)
             cardRef.current.style.setProperty(
-                "--offset-x", `${mouse.x}px`
-            )
+                "--offset-x", `${mouse.x}px`)
             cardRef.current.style.setProperty(
-                "--offset-y", `${mouse.y}px`
-            )
+                "--offset-y", `${mouse.y}px`)
+            cardRef.current.style.setProperty(
+                "--mag", `${dist / extent}`)
         }
     }, [props.tiltX, props.tiltY]);
     return (
         <div className={styles.viewport}
             onMouseMove={onMouseMove}
             ref={viewportRef}>
-            <div className={styles.card} ref={cardRef}>
-                    <div className={styles.background}>
-                        <div className={styles.iridescent} />
-                        <div className={styles.checkerboard} />
-                        <div className={styles.shadow} />
-                    </div>
-                    <div className={styles.border} />
-                    <div className={styles.childContainer} >
-                        <h1>etweoihsdhgisdg</h1>
-                    </div>
+            <div className={styles.card} ref={cardRef} style={{
+
+            } as CSSProperties}>
+                <div className={styles.background}>
+                    <div className={`${styles.iridescent} absolute parallax`} />
+                    <div className={`${styles.checkerboard} absolute parallax`} />
+                    <div className={`${styles.shadow} absolute`} />
                 </div>
+                <div className={styles.border} />
+                <div className={styles.childContainer} >
+                    <h1>etweoihsdhgisdg</h1>
+                </div>
+            </div>
         </div>
     );
 }

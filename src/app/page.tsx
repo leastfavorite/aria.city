@@ -3,8 +3,9 @@
 import Background from "@/components/Background";
 import CanvasProvider from "@/components/CanvasProvider";
 import Card from "@/components/Card";
-import { CardStack } from "@/components/CardStack";
 import Header from "@/components/Header/index";
+
+import styles from "./page.module.css";
 
 export default function Page() {
 
@@ -12,7 +13,13 @@ export default function Page() {
     <Background>
       <CanvasProvider>
         <Header />
-        <Card tiltX={20} tiltY={50} />
+        <main>
+          <div className={styles.leftContainer}>
+          </div>
+          <div className={styles.rightContainer}>
+            <Card tiltX={20} tiltY={50} />
+          </div>
+        </main>
       </CanvasProvider>
     </Background>
   </>);
