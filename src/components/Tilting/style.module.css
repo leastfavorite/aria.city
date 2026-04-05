@@ -1,0 +1,84 @@
+.viewport {
+    display: inline-block;
+    position: relative;
+    perspective: 400px;
+    transform-style: preserve-3d;
+
+    --extent: 2em;
+    &:after {
+        content: "";
+        position: absolute;
+        --nextent: calc(-1 * var(--extent));
+        left: var(--nextent);
+        right: var(--nextent);
+        top: var(--nextent);
+        bottom: var(--nextent);
+    }
+}
+
+.card {
+    --border: 2px;
+    flex: 1;
+    padding: 0.5em;
+    display: inline-block;
+    position: relative;
+
+    transition-property: rotate scale;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+
+    transform-style: preserve-3d;
+
+    .viewport:hover & {
+        scale: var(--mag);
+        rotate: var(--rot);
+    }
+
+    .viewport:active & {
+        scale: 1;
+    }
+
+    & :global(.parallax-before):before {
+        transition-duration: 0.8s;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+        transition-property: translate;
+
+        .viewport:hover & {
+            translate:
+                calc(var(--parallax) * var(--offset-x))
+                calc(var(--parallax) * var(--offset-y));
+        }
+    }
+
+    & :global(.parallax-after):after {
+        transition-duration: 0.8s;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+        transition-property: translate;
+
+        .viewport:hover & {
+            translate:
+                calc(var(--parallax) * var(--offset-x))
+                calc(var(--parallax) * var(--offset-y));
+        }
+    }
+
+    & :global(.parallax) {
+        transition-duration: 0.8s;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+        transition-property: translate;
+
+        .viewport:hover & {
+            translate:
+                calc(var(--parallax) * var(--offset-x))
+                calc(var(--parallax) * var(--offset-y));
+        }
+}
+
+    & :global(.absolute) {
+        position: absolute;
+        top: var(--extent, 0);
+        bottom: var(--extent, 0);
+        left: var(--extent, 0);
+        right: var(--extent, 0);
+    }
+}

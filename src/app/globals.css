@@ -35,6 +35,24 @@ body {
     rgb(var(--color1)) 100%;
 }
 
+.absolute-after:after {
+  --e: var(--extent, 0);
+  position: absolute;
+  top: var(--e);
+  bottom: var(--e);
+  left: var(--e);
+  right: var(--e);
+}
+
+.absolute-before:before {
+  --e: var(--extent, 0);
+  position: absolute;
+  top: var(--e);
+  bottom: var(--e);
+  left: var(--e);
+  right: var(--e);
+}
+
 .absolute {
   --e: var(--extent, 0);
   position: absolute;

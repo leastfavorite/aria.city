@@ -1,37 +1,8 @@
-.card {
-    --border: 2px;
-    flex: 1;
-    margin: var(--extent);
-    display: inline-block;
-    position: relative;
 
-    transition-property: rotate scale;
-    transition-duration: 0.3s;
-    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+/* give viewport bigger hitbox */
 
-    transform-style: preserve-3d;
-
-    .viewport:hover & {
-        scale: calc((1 - var(--mag)) * .2 + 1.1);
-        rotate: var(--rot);
-    }
-
-    .viewport:active & {
-        scale: calc((1 - var(--mag)) * .1 + 1.1);
-    }
-}
-
-.viewport {
-    display: inline-block;
-    --extent: 20px;
-    position: relative;
-    top: calc(-1 * var(--extent));
-    bottom: calc(-1 * var(--extent));
-    left: calc(-1 * var(--extent));
-    right: calc(-1 * var(--extent));
-
-    perspective: 400px;
-    transform-style: preserve-3d;
+.container {
+    aspect-ratio: 2.5 / 3.5;
 }
 
 .background {
@@ -41,17 +12,20 @@
     left: 0;
     top: 0;
     right: 0;
-    background-color: #a30;
+    background-color: #80b;
 
     overflow: hidden;
     border-radius: var(--border);
 
     & .iridescent {
-        --parallax: -5;
+        --parallax: -3;
         --extent: -500%;
 
         --iridescence-opacity: 0.3;
-        --iridescence-opacity-hover: 0.8;
+        --iridescence-opacity-hover: 0.5;
+
+        z-index: 50;
+        pointer-events: none;
 
         mix-blend-mode: screen;
         opacity: var(--iridescence-opacity);
@@ -122,24 +96,4 @@
 
 .childContainer {
     transform-style: preserve-3d;
-}
-
-.card :global(.parallax) {
-    transition-duration: 0.8s;
-    transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
-    transition-property: translate;
-
-    .viewport:hover & {
-        translate:
-            calc(var(--parallax) * var(--offset-x))
-            calc(var(--parallax) * var(--offset-y));
-    }
-}
-
-.card :global(.absolute) {
-    position: absolute;
-    top: var(--extent, 0);
-    bottom: var(--extent, 0);
-    left: var(--extent, 0);
-    right: var(--extent, 0);
 }

@@ -1,0 +1,64 @@
+.navRoot {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    gap: 1em;
+    text-transform: lowercase;
+
+    align-items: space-around;
+    justify-content: center;
+
+
+    & a {
+        text-decoration: none;
+        color: rgba(var(--fg), 80%);
+        font-size: 1.3em;
+        letter-spacing: 1;
+
+        :global(.tilting):hover & {
+            color: rgb(var(--bg));
+            font-weight: 800;
+            letter-spacing: 1.5;
+        }
+    }
+
+    & li {
+        overflow: hidden;
+        padding: 0em 1em;
+
+        :global(.tilting):hover & {
+            background: repeating-conic-gradient(
+                rgba(var(--bg), 35%) 0% 25%,
+                rgba(var(--fg), 0%) 0% 50%
+            )
+            50% / 15px 15px;
+            mix-blend-mode: overlay;
+        }
+
+    }
+}
+
+.iridescent:before {
+    content: "";
+
+    --parallax: -3;
+    --extent: -500%;
+
+    background: repeating-radial-gradient(circle at center,
+        var(--iridescent)
+    ) 50% / 500% 500%;
+    :global(.tilting):hover & {
+        background-color: rgba(var(--fg), 25%);
+    }
+
+}
+
+.iridescent {
+    --extent: 0%;
+    overflow: hidden;
+
+    :global(.tilting):hover & {
+    }
+
+    pointer-events: none;
+}

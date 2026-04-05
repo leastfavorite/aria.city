@@ -30,7 +30,6 @@ function NavButton({ href, text }: { href: string, text: string }) {
             bounds.height * bounds.height
         ) / 2;
 
-
         const parallel = [
             bounds.x + bounds.width / 2 - event.clientX,
             bounds.y + bounds.height / 2 - event.clientY,

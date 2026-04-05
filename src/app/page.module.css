@@ -1,7 +1,50 @@
+.main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding: 1em;
+  gap: 1em;
+}
+
+.main > div {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .container {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
   background-color: black;
+}
+
+.imageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  width: 400px;
+  height: 250px;
+  overflow: hidden;
+
+  opacity: 0.95;
+  border: 3px solid rgb(var(--fg));
+  border-radius: 3px;
+  & img {
+    width: 110%;
+    height: 110%;
+    position: absolute;
+
+
+    &:first-child {
+    }
+  }
+}
+
+.cardContainer {
+  aspect-ratio: 2.5 / 3.5;
 }
